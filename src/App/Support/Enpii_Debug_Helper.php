@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Enpii\Demoda\App\Support;
+namespace Enpii_Debug\App\Support;
 
-class Demoda_Helper {
+class Enpii_Debug_Helper {
 	public static function check_mandatory_prerequisites(): bool {
 		return version_compare( phpversion(), '7.3.0', '>=' );
 	}

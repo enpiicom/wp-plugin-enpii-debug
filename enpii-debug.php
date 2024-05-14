@@ -42,10 +42,10 @@ add_action(
 	function () {
 		$error_message = '';
 
-		$plugin_slug = plugin_basename( __FILE__ );
-		if ( ! $plugin_slug !== ENPII_DEBUG_PLUGIN_SLUG ) {
+		$plugin_slug = plugin_basename( __DIR__ );
+		if ( $plugin_slug !== ENPII_DEBUG_PLUGIN_SLUG ) {
 			$error_message .= $error_message ? '<br />' : '';
-			$error_message .= sprintf( __( 'Plugin <strong>%s</strong> folder name must be %.', 'enpii' ), 'Enpii Debug', ENPII_DEBUG_PLUGIN_SLUG );
+			$error_message .= sprintf( __( 'Plugin <strong>%s</strong> folder name must be %s.', 'enpii' ), 'Enpii Debug', ENPII_DEBUG_PLUGIN_SLUG );
 		}
 
 		if ( ! \Enpii_Debug\App\Support\Enpii_Debug_Helper::check_enpii_base_plugin() ) {
@@ -82,7 +82,7 @@ add_action(
 				\Enpii_Base\App\Support\App_Const::ACTION_WP_APP_LOADED,
 				function () {
 					\Enpii_Debug\App\WP\Enpii_Debug_WP_Plugin::init_with_wp_app(
-						DEMODA_PLUGIN_SLUG,
+						ENPII_DEBUG_PLUGIN_SLUG,
 						__DIR__,
 						plugin_dir_url( __FILE__ )
 					);
