@@ -2,16 +2,16 @@
 
 declare(strict_types=1);
 
-namespace Enpii\Demoda\App\Jobs;
+namespace Enpii_Debug\App\Jobs;
 
-use Enpii\Demoda\App\Controllers\Demoda_Controller;
 use Enpii_Base\Foundation\Support\Executable_Trait;
+use Enpii_Debug\App\Controllers\Enpii_Debug_Controller;
 use Illuminate\Support\Facades\Route;
 
-class Register_Demoda_Routes {
+class Register_Routes {
 	use Executable_Trait;
 
 	public function handle(): void {
-		Route::get( 'demoda', [ Demoda_Controller::class, 'hello' ] );
+		Route::get( 'enpii-debug', [ Enpii_Debug_Controller::class, 'hello' ] );
 	}
 }

@@ -29,6 +29,11 @@ if ( file_exists( $autoload_file ) && ! class_exists( \Enpii_Debug\App\WP\Enpii_
 	require_once $autoload_file;
 }
 
+if ( ! class_exists( 'WP_CLI' ) ) {
+	// We want to redirect to setup app before the WP App init
+	add_action( ENPII_BASE_SETUP_HOOK_NAME, [\Enpii_Debug\App\Support\Enpii_Debug_Helper::class, 'maybe_redirect_to_setup_app'] , -200 );
+}
+
 /**
 | We need to check the plugin mandatory requirements first
  */
@@ -76,7 +81,8 @@ add_action(
 		/**
 		| We initiate the plugin later
 		*/
-		if ( \Enpii_Debug\App\Support\Enpii_Debug_Helper::check_mandatory_prerequisites() ) {
+		$check_result = \Enpii_Debug\App\Support\Enpii_Debug_Helper::check_mandatory_prerequisites();
+		if ( $check_result === true ) {
 			// We register Tamara_Checkout_WP_Plugin as a Service Provider
 			add_action(
 				\Enpii_Base\App\Support\App_Const::ACTION_WP_APP_LOADED,

@@ -13,6 +13,18 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 		parent::register();
 	}
 
+	/**
+     * Bootstrap any package services.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+		parent::boot();
+
+		$this->loadMigrationsFrom( __DIR__ .'/../../../database/migrations');
+    }
+
 	protected function fetch_config(): void {
 		wp_app_config(
 			[
@@ -216,4 +228,30 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 
 		return $config;
 	}
+
+	/**
+     * Register the package's publishable resources.
+     *
+     * @return void
+     */
+    private function registerPublishing()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/Storage/migrations' => database_path('migrations'),
+            ], 'telescope-migrations');
+
+            $this->publishes([
+                __DIR__.'/../public' => public_path('vendor/telescope'),
+            ], 'telescope-assets');
+
+            $this->publishes([
+                __DIR__.'/../config/telescope.php' => config_path('telescope.php'),
+            ], 'telescope-config');
+
+            $this->publishes([
+                __DIR__.'/../stubs/TelescopeServiceProvider.stub' => app_path('Providers/TelescopeServiceProvider.php'),
+            ], 'telescope-provider');
+        }
+    }
 }
