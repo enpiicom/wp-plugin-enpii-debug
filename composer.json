@@ -1,0 +1,63 @@
+{
+  "name": "enpii/enpii-debug",
+  "type": "wordpress-plugin",
+  "description": "Debug plugin to be used with Enpii Base",
+  "license": "MIT",
+  "keywords": [
+    "wordpress",
+    "enpii",
+    "debug",
+    "web console",
+    "laravel",
+    "wordpress laravel"
+  ],
+  "version": "1.0.0",
+  "authors": [
+    {
+      "name": "Enpii Team",
+      "email": "dev@enpii.com",
+      "homepage": "https://team.enpii.com"
+    },
+    {
+      "name": "Trac Nguyen",
+      "email": "npbtrac@yahoo.com"
+    }
+  ],
+  "require": {
+    "composer/installers": "~2.2.0",
+    "mcaskill/composer-exclude-files": "~3.0.0",
+    "laravel/telescope": "^5.0.0",
+    "spatie/laravel-web-tinker": "~1.8.4",
+    "php": "^7.3|^8.0"
+  },
+  "require-dev": {
+    "automattic/vipwpcs": "^3.0.0",
+    "phpcompatibility/php-compatibility": "^9.3.5",
+    "dealerdirect/phpcodesniffer-composer-installer": "~1.0.0",
+    "phpunit/phpunit": "^9.6",
+    "mockery/mockery": "^1.6",
+    "brain/monkey": "^2.6.0",
+    "10up/wp_mock": "^1.0.0",
+    "codeception/codeception": "^5.0.0",
+    "codeception/module-asserts": "^3.0",
+    "codeception/module-phpbrowser": "^3.0"
+  },
+  "config": {
+    "platform-check": false,
+    "allow-plugins": {
+      "composer/installers": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "mcaskill/composer-exclude-files": true
+    },
+    "vendor-dir": "./vendor",
+    "sort-packages": true
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "autoload": {
+    "psr-4": {
+      "Enpii_Debug\\": "src",
+      "Enpii_Debug\\Tests\\": "tests"
+    }
+  }
+}
