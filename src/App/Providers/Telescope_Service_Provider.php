@@ -110,7 +110,7 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 			*/
 
 			'middleware' => [
-				'web',
+				'authenticate_is_wp_user_admin',
 			],
 
 			/*
@@ -228,30 +228,4 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 
 		return $config;
 	}
-
-	/**
-     * Register the package's publishable resources.
-     *
-     * @return void
-     */
-    private function registerPublishing()
-    {
-        if ($this->app->runningInConsole()) {
-            $this->publishes([
-                __DIR__.'/Storage/migrations' => database_path('migrations'),
-            ], 'telescope-migrations');
-
-            $this->publishes([
-                __DIR__.'/../public' => public_path('vendor/telescope'),
-            ], 'telescope-assets');
-
-            $this->publishes([
-                __DIR__.'/../config/telescope.php' => config_path('telescope.php'),
-            ], 'telescope-config');
-
-            $this->publishes([
-                __DIR__.'/../stubs/TelescopeServiceProvider.stub' => app_path('Providers/TelescopeServiceProvider.php'),
-            ], 'telescope-provider');
-        }
-    }
 }

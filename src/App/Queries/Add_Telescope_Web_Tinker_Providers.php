@@ -20,13 +20,7 @@ class Add_Telescope_Web_Tinker_Providers {
 	public function handle(): array {
 		$more_providers = [];
 
-		if ( defined( 'WP_APP_TELESCOPE_ENABLED' ) && WP_APP_TELESCOPE_ENABLED ) {
-			$more_providers[] = Telescope_Service_Provider::class;
-		}
-
-		if ( defined( 'WP_APP_WEB_TINKER_ENABLED' ) && WP_APP_WEB_TINKER_ENABLED ) {
-			$more_providers[] = Web_Tinker_Service_Provider::class;
-		}
+		$more_providers[] = Telescope_Service_Provider::class;
 		$more_providers[] = Web_Tinker_Service_Provider::class;
 
 		$providers = array_merge(

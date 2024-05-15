@@ -39,7 +39,7 @@ class Web_Tinker_Service_Provider extends WebTinkerServiceProvider {
 			 * By default this package will only run in local development.
 			 * Do not change this, unless you know what you are doing.
 			 */
-			'enabled' => env( 'WEB_TINKER__ENABLED', true ),
+			'enabled' => env( 'WEB_TINKER_ENABLED', true ),
 
 			/*
 			* This class can modify the output returned by Tinker. You can replace this with
@@ -54,7 +54,7 @@ class Web_Tinker_Service_Provider extends WebTinkerServiceProvider {
 			'middleware' => [
 				\Illuminate\Cookie\Middleware\EncryptCookies::class,
 				\Illuminate\Session\Middleware\StartSession::class,
-				\Spatie\WebTinker\Http\Middleware\Authorize::class,
+				\Enpii_Base\App\Http\Middleware\Authenticate_Is_WP_User_Administrator::class,
 			],
 
 			/*
