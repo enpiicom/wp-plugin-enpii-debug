@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Enpii_Debug\App\Providers;
 
+use Enpii_Debug\App\Controllers\Queries_Controller;
 use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
 use Laravel\Telescope\TelescopeServiceProvider;
 
 class Telescope_Service_Provider extends TelescopeServiceProvider {
@@ -23,7 +25,25 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 		parent::boot();
 
 		$this->loadMigrationsFrom( __DIR__ .'/../../../database/migrations');
+		$this->register_routes();
     }
+
+	/**
+     * Register the package routes.
+     *
+     * @return void
+     */
+    protected function register_routes()
+    {
+		Route::group([
+            'domain' => wp_app_config('telescope.domain', null),
+            'prefix' => wp_app_config('telescope.path'),
+            'middleware' => 'telescope',
+        ], function () {
+			// Override `/telescope-api/queries`
+            Route::post('/telescope-api/queries', [ Queries_Controller::class, 'index']);
+        });
+	}
 
 	protected function fetch_config(): void {
 		wp_app_config(
@@ -187,7 +207,7 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 
 				\Laravel\Telescope\Watchers\NotificationWatcher::class => env( 'TELESCOPE_NOTIFICATION_WATCHER', true ),
 
-				\Laravel\Telescope\Watchers\QueryWatcher::class => [
+				\Enpii_Debug\App\Watchers\Query_Watcher::class => [
 					'enabled' => env( 'TELESCOPE_QUERY_WATCHER', true ),
 					'ignore_packages' => true,
 					'ignore_paths' => [],
