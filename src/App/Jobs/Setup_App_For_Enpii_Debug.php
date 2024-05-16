@@ -12,12 +12,15 @@ class Setup_App_For_Enpii_Debug {
 
 	public function handle(): void {
 		// We only want to publish `telescope-assets` here.
-		//	Using `telescope:publish`would publich `telescope-config` as well.
-		//	We load migration rules from the plugin folder so we don't need to publish `telescope-migrations`.
-		Artisan::call('vendor:publish', [
-            '--tag' => 'telescope-assets',
-            '--force' => true,
-        ]);
+		//  Using `telescope:publish`would publich `telescope-config` as well.
+		//  We load migration rules from the plugin folder so we don't need to publish `telescope-migrations`.
+		Artisan::call(
+			'vendor:publish',
+			[
+				'--tag' => 'telescope-assets',
+				'--force' => true,
+			]
+		);
 
 		Artisan::call(
 			'web-tinker:install',

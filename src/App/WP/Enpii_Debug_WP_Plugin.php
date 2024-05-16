@@ -25,9 +25,9 @@ class Enpii_Debug_WP_Plugin extends WP_Plugin {
 		add_filter( 'log_query_custom_data', [ $this, 'watch_wp_queries' ], 10, 5 );
 
 
-		add_action( App_Const::ACTION_WP_APP_SETUP_APP, [ $this, 'setup_app' ]);
-		add_action( App_Const::ACTION_WP_APP_MARK_SETUP_APP_DONE, [ $this, 'mark_setup_app_done' ]);
-		add_action( App_Const::ACTION_WP_APP_MARK_SETUP_APP_FAILED, [ $this, 'mark_setup_app_failed' ]);
+		add_action( App_Const::ACTION_WP_APP_SETUP_APP, [ $this, 'setup_app' ] );
+		add_action( App_Const::ACTION_WP_APP_MARK_SETUP_APP_DONE, [ $this, 'mark_setup_app_done' ] );
+		add_action( App_Const::ACTION_WP_APP_MARK_SETUP_APP_FAILED, [ $this, 'mark_setup_app_failed' ] );
 	}
 
 	public function get_name(): string {
@@ -57,18 +57,20 @@ class Enpii_Debug_WP_Plugin extends WP_Plugin {
 	}
 
 	public function watch_wp_queries( $query_data, $query, $query_time, $query_callstack, $query_start ) {
-		$config = wp_app_config('database.connections.wpdb');
+		$config = wp_app_config( 'database.connections.wpdb' );
 		$config['query_callstack'] = $query_callstack;
 		$config['query_start'] = $query_start;
 		$config['query_time'] = $query_time;
 		$config['query_data'] = $query_data;
 		$config['query'] = $query;
 		/** @var \Enpii_Base\Foundation\Database\Connectors\Connection_Factory $connection_factory */
-		$connection_factory = wp_app('db.factory');
+		$connection_factory = wp_app( 'db.factory' );
 
 		/** @var \Enpii_Base\Foundation\Database\Wpdb_Connection $obj_wpdb */
-		$obj_wpdb = $connection_factory->make($config, 'wpdb');
-		$event = new QueryExecuted($query, $query_data, $query_time, $obj_wpdb);
-		wp_app_event($event);
+		$obj_wpdb = $connection_factory->make( $config, 'wpdb' );
+		$event = new QueryExecuted( $query, $query_data, $query_time, $obj_wpdb );
+		wp_app_event( $event );
+
+		return $query_data;
 	}
 }

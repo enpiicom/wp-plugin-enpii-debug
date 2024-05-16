@@ -9,12 +9,11 @@ use Laravel\Telescope\Http\Controllers\QueriesController;
 
 class Queries_Controller extends QueriesController {
 	/**
-     * The watcher class for the controller.
-     *
-     * @return string
-     */
-    protected function watcher()
-    {
-        return Query_Watcher::class;
-    }
+	 * The watcher class for the controller.
+	 *
+	 * @return string
+	 */
+	protected function watcher() {
+		return Query_Watcher::class;
+	}
 }

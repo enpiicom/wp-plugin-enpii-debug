@@ -62,7 +62,7 @@ class Web_Tinker_Service_Provider extends WebTinkerServiceProvider {
 			 * configuration file name, relative to the root of your
 			 * application directory.
 			 */
-			'config_file' => env('PSYSH_CONFIG', null),
+			'config_file' => env( 'PSYSH_CONFIG', null ),
 		];
 
 		return $config;

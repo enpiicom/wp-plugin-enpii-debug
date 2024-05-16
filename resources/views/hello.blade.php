@@ -7,6 +7,7 @@ use Enpii\Demoda\App\WP\Demoda_WP_Plugin;
 		<?php
 		echo esc_html(
 			sprintf(
+				// translators: %s is the name of the plugin
 				__( 'Hello from %s plugin.', 'enpii' ),
 				Demoda_WP_Plugin::wp_app_instance()->get_name(),
 			)

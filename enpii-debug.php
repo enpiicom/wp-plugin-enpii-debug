@@ -31,7 +31,7 @@ if ( file_exists( $autoload_file ) && ! class_exists( \Enpii_Debug\App\WP\Enpii_
 
 if ( ! class_exists( 'WP_CLI' ) ) {
 	// We want to redirect to setup app before we init the plugin
-	add_action( ENPII_BASE_SETUP_HOOK_NAME, [\Enpii_Debug\App\Support\Enpii_Debug_Helper::class, 'maybe_redirect_to_setup_app'] , -200 );
+	add_action( ENPII_BASE_SETUP_HOOK_NAME, [ \Enpii_Debug\App\Support\Enpii_Debug_Helper::class, 'maybe_redirect_to_setup_app' ], -200 );
 }
 
 /**
@@ -50,11 +50,13 @@ add_action(
 		$plugin_slug = plugin_basename( __DIR__ );
 		if ( $plugin_slug !== ENPII_DEBUG_PLUGIN_SLUG ) {
 			$error_message .= $error_message ? '<br />' : '';
-			$error_message .= sprintf( __( 'Plugin <strong>%s</strong> folder name must be %s.', 'enpii' ), 'Enpii Debug', ENPII_DEBUG_PLUGIN_SLUG );
+			// translators: %1$s is the plugin name, %2$s is the plugin slug
+			$error_message .= sprintf( __( 'Plugin <strong>%1$s</strong> folder name must be %2$s.', 'enpii' ), 'Enpii Debug', ENPII_DEBUG_PLUGIN_SLUG );
 		}
 
 		if ( ! \Enpii_Debug\App\Support\Enpii_Debug_Helper::check_enpii_base_plugin() ) {
 			$error_message .= $error_message ? '<br />' : '';
+			// translators: %s is the plugin name
 			$error_message .= sprintf( __( 'Plugin <strong>%s</strong> is required.', 'enpii' ), 'Enpii Base' );
 		}
 
@@ -63,6 +65,7 @@ add_action(
 				'admin_notices',
 				function () use ( $error_message ) {
 					$error_message = sprintf(
+						// translators: %s is the plugin name
 						__( 'Plugin <strong>%s</strong> is disabled.', 'enpii' ),
 						'Enpii Debug'
 					) . '<br />' . $error_message;

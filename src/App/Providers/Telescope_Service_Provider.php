@@ -16,33 +16,34 @@ class Telescope_Service_Provider extends TelescopeServiceProvider {
 	}
 
 	/**
-     * Bootstrap any package services.
-     *
-     * @return void
-     */
-    public function boot()
-    {
+	 * Bootstrap any package services.
+	 *
+	 * @return void
+	 */
+	public function boot() {
 		parent::boot();
 
-		$this->loadMigrationsFrom( __DIR__ .'/../../../database/migrations');
+		$this->loadMigrationsFrom( __DIR__ . '/../../../database/migrations' );
 		$this->register_routes();
-    }
+	}
 
 	/**
-     * Register the package routes.
-     *
-     * @return void
-     */
-    protected function register_routes()
-    {
-		Route::group([
-            'domain' => wp_app_config('telescope.domain', null),
-            'prefix' => wp_app_config('telescope.path'),
-            'middleware' => 'telescope',
-        ], function () {
-			// Override `/telescope-api/queries`
-            Route::post('/telescope-api/queries', [ Queries_Controller::class, 'index']);
-        });
+	 * Register the package routes.
+	 *
+	 * @return void
+	 */
+	protected function register_routes() {
+		Route::group(
+			[
+				'domain' => wp_app_config( 'telescope.domain', null ),
+				'prefix' => wp_app_config( 'telescope.path' ),
+				'middleware' => 'telescope',
+			],
+			function () {
+				// Override `/telescope-api/queries`
+				Route::post( '/telescope-api/queries', [ Queries_Controller::class, 'index' ] );
+			}
+		);
 	}
 
 	protected function fetch_config(): void {
