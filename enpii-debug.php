@@ -31,7 +31,7 @@ if ( file_exists( $autoload_file ) && ! class_exists( \Enpii_Debug\App\WP\Enpii_
 
 if ( ! class_exists( 'WP_CLI' ) ) {
 	// We want to redirect to setup app before we init the plugin
-	add_action( ENPII_BASE_SETUP_HOOK_NAME, [ \Enpii_Debug\App\Support\Enpii_Debug_Helper::class, 'maybe_redirect_to_setup_app' ], -200 );
+	add_action( 'plugins_loaded', [ \Enpii_Debug\App\Support\Enpii_Debug_Helper::class, 'maybe_redirect_to_setup_app' ], -200 );
 }
 
 /**
