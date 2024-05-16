@@ -24,7 +24,6 @@
     }
   ],
   "require": {
-    "composer/installers": "~2.2.0",
     "mcaskill/composer-exclude-files": "~3.0.0",
     "laravel/telescope": "^5.0.0",
     "spatie/laravel-web-tinker": "~1.8.4",
@@ -45,7 +44,6 @@
   "config": {
     "platform-check": false,
     "allow-plugins": {
-      "composer/installers": true,
       "dealerdirect/phpcodesniffer-composer-installer": true,
       "mcaskill/composer-exclude-files": true
     },

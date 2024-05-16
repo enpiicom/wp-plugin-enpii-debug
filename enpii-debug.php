@@ -19,10 +19,10 @@ defined( 'ENPII_DEBUG_PLUGIN_SLUG' ) || define( 'ENPII_DEBUG_PLUGIN_SLUG', 'enpi
 // We include the vendor in the repo if there is no vendor loaded before
 if ( version_compare( phpversion(), '8.1.0', '<' ) || ENPII_BASE_FORCE_LEGACY ) {
 	// Lower that 8.1, we load dependencies for <= 8.0, we use Laravel 7
-	$autoload_file = __DIR__ . DIR_SEP . 'vendor-legacy' . DIR_SEP . 'autoload.php';
+	$autoload_file = __DIR__ . DIRECTORY_SEPARATOR . 'vendor-legacy' . DIRECTORY_SEPARATOR . 'autoload.php';
 } else {
 	// PHP >= 8.1, we use Laravel 10 as the latest
-	$autoload_file = __DIR__ . DIR_SEP . 'vendor' . DIR_SEP . 'autoload.php';
+	$autoload_file = __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 }
 
 if ( file_exists( $autoload_file ) && ! class_exists( \Enpii_Debug\App\WP\Enpii_Debug_WP_Plugin::class ) ) {
