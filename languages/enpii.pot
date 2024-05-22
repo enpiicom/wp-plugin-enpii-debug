@@ -1,0 +1,56 @@
+# Copyright (C) 2024 dev@enpii.com, nptrac@yahoo.com
+# This file is distributed under the same license as the Enpii Debug plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Enpii Debug 1.0.0\n"
+"Report-Msgid-Bugs-To: https://github.com/enpiicom/wp-plugin-enpii-debug/issues/new\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-05-22T04:56:07+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.9.0\n"
+"language-Team: Enpii Team <dev@enpii.com>\n"
+"X-Domain: enpii\n"
+
+#. Plugin Name of the plugin
+msgid "Enpii Debug"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://enpii.com/wp-plugin-enpii-debug/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Debug plugin to be used with Enpii Base"
+msgstr ""
+
+#. Author of the plugin
+msgid "dev@enpii.com, nptrac@yahoo.com"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://enpii.com/"
+msgstr ""
+
+#. translators: %1$s is the plugin name, %2$s is the plugin slug
+#: enpii-debug.php:54
+msgid "Plugin <strong>%1$s</strong> folder name must be %2$s."
+msgstr ""
+
+#. translators: %s is the plugin name
+#: enpii-debug.php:60
+msgid "Plugin <strong>%s</strong> is required."
+msgstr ""
+
+#. translators: %s is the plugin name
+#: enpii-debug.php:69
+msgid "Plugin <strong>%s</strong> is disabled."
+msgstr ""
+
+#. translators: %s is the name of the plugin
+#: resources/views/hello.blade.php:11
+msgid "Hello from %s plugin."
+msgstr ""
