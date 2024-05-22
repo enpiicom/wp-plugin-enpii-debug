@@ -4830,6 +4830,6 @@
             "install-path": "../webmozart/assert"
         }
     ],
-    "dev": true,
+    "dev": false,
     "dev-package-names": []
 }

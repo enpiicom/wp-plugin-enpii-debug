@@ -768,7 +768,6 @@ class Telescope
     public static function assetsAreCurrent()
     {
         $publishedPath = public_path('vendor/telescope/mix-manifest.json');
-		// devdd($publishedPath, public_path());
 
         if (! File::exists($publishedPath)) {
             throw new RuntimeException('The Telescope assets are not published. Please run: php artisan telescope:publish');
