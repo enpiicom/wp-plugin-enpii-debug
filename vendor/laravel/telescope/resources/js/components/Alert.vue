@@ -76,27 +76,27 @@
     <div class="modal" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-body">
-                    <p class="m-0 py-4">{{message}}</p>
+                <div class="modal-body text-center">
+                    <p class="mt-3 mb-0">{{message}}</p>
                 </div>
 
 
-                <div class="modal-footer justify-content-start flex-row-reverse">
+                <div class="modal-footer justify-content-center">
 
-                    <button v-if="type == 'error'" class="btn btn-primary" @click="close">
-                        Close
+                    <button v-if="type == 'error'" class="btn btn-secondary btn-sm" @click="close">
+                        CLOSE
                     </button>
 
-                    <button v-if="type == 'success'" class="btn btn-primary" @click="close">
-                        Okay
+                    <button v-if="type == 'success'" class="btn btn-secondary btn-sm" @click="close">
+                        OK
                     </button>
 
 
-                    <button v-if="type == 'confirmation'" class="btn btn-danger" @click="confirm">
-                        Yes
+                    <button v-if="type == 'confirmation'" class="btn btn-danger btn-sm" @click="confirm">
+                        YES
                     </button>
-                    <button v-if="type == 'confirmation'" class="btn" @click="cancel">
-                        Cancel
+                    <button v-if="type == 'confirmation'" class="btn btn-secondary btn-sm" @click="cancel">
+                        NO, CANCEL
                     </button>
 
                 </div>

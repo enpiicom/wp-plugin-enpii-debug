@@ -2,14 +2,10 @@
 
 namespace Laravel\Telescope\Storage;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Laravel\Telescope\Database\Factories\EntryModelFactory;
 
 class EntryModel extends Model
 {
-    use HasFactory;
-
     /**
      * The table associated with the model.
      *
@@ -116,17 +112,8 @@ class EntryModel extends Model
     protected function whereTag($query, EntryQueryOptions $options)
     {
         $query->when($options->tag, function ($query, $tag) {
-            $tags = collect(explode(',', $tag))->map(fn ($tag) => trim($tag));
-
-            if ($tags->isEmpty()) {
-                return $query;
-            }
-
-            return $query->whereIn('uuid', function ($query) use ($tags) {
-                $query->select('entry_uuid')->from('telescope_entries_tags')
-                    ->whereIn('entry_uuid', function ($query) use ($tags) {
-                        $query->select('entry_uuid')->from('telescope_entries_tags')->whereIn('tag', $tags->all());
-                    });
+            return $query->whereIn('uuid', function ($query) use ($tag) {
+                $query->select('entry_uuid')->from('telescope_entries_tags')->whereTag($tag);
             });
         });
 
@@ -191,15 +178,5 @@ class EntryModel extends Model
     public function getConnectionName()
     {
         return config('telescope.storage.database.connection');
-    }
-
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    public static function newFactory()
-    {
-        return EntryModelFactory::new();
     }
 }

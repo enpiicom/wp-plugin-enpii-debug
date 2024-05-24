@@ -136,20 +136,18 @@
                             '&take=1' +
                             '&family_hash=' + this.familyHash
                     ).then(response => {
-                        if (! this._isDestroyed) {
-                            this.recordingStatus = response.data.status;
+                        this.recordingStatus = response.data.status;
 
-                            if (response.data.entries.length && !this.entries.length) {
+                        if (response.data.entries.length && !this.entries.length) {
+                            this.loadNewEntries();
+                        } else if (response.data.entries.length && _.first(response.data.entries).id !== _.first(this.entries).id) {
+                            if (this.$root.autoLoadsNewEntries) {
                                 this.loadNewEntries();
-                            } else if (response.data.entries.length && _.first(response.data.entries).id !== _.first(this.entries).id) {
-                                if (this.$root.autoLoadsNewEntries) {
-                                    this.loadNewEntries();
-                                } else {
-                                    this.hasNewEntries = true;
-                                }
                             } else {
-                                this.checkForNewEntries();
+                                this.hasNewEntries = true;
                             }
+                        } else {
+                            this.checkForNewEntries();
                         }
                     })
                 }, this.newEntriesTimer);
@@ -267,20 +265,14 @@
 </script>
 
 <template>
-    <div class="card overflow-hidden">
+    <div class="card">
         <div class="card-header d-flex align-items-center justify-content-between">
-            <h2 class="h6 m-0">{{this.title}}</h2>
+            <h5>{{this.title}}</h5>
 
-            <div class="form-control-with-icon w-25" v-if="!hideSearch && (tag || entries.length > 0)">
-                <div class="icon-wrapper">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" class="icon">
-                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <input type="text" class="form-control w-100"
-                       id="searchInput"
-                       placeholder="Search Tag" v-model="tag" @input.stop="search">
-            </div>
+            <input type="text" class="form-control w-25"
+                   v-if="!hideSearch && (tag || entries.length > 0)"
+                   id="searchInput"
+                   placeholder="Search Tag" v-model="tag" @input.stop="search">
         </div>
 
         <p v-if="recordingStatus !== 'enabled'" class="mt-0 mb-0 disabled-watcher d-flex align-items-center">
@@ -310,7 +302,7 @@
         </div>
 
 
-        <table id="indexScreen" class="table table-hover mb-0 penultimate-column-right" v-if="ready && entries.length > 0">
+        <table id="indexScreen" class="table table-hover table-sm mb-0 penultimate-column-right" v-if="ready && entries.length > 0">
             <thead>
             <slot name="table-header"></slot>
             </thead>
@@ -318,7 +310,7 @@
 
             <transition-group tag="tbody" name="list">
                 <tr v-if="hasNewEntries" key="newEntries" class="dontanimate">
-                    <td colspan="100" class="text-center card-bg-secondary py-2">
+                    <td colspan="100" class="text-center card-bg-secondary py-1">
                         <small><a href="#" v-on:click.prevent="loadNewEntries" v-if="!loadingNewEntries">Load New Entries</a></small>
 
                         <small v-if="loadingNewEntries">Loading...</small>
@@ -332,7 +324,7 @@
 
 
                 <tr v-if="hasMoreEntries" key="olderEntries" class="dontanimate">
-                    <td colspan="100" class="text-center card-bg-secondary py-2">
+                    <td colspan="100" class="text-center card-bg-secondary py-1">
                         <small><a href="#" v-on:click.prevent="loadOlderEntries" v-if="!loadingMoreEntries">Load Older Entries</a></small>
 
                         <small v-if="loadingMoreEntries">Loading...</small>

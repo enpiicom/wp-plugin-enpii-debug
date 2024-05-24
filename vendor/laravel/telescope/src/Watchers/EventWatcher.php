@@ -2,7 +2,6 @@
 
 namespace Laravel\Telescope\Watchers;
 
-use Closure;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Str;
@@ -92,8 +91,6 @@ class EventWatcher extends Watcher
                     return $listener[0].'@'.$listener[1];
                 } elseif (is_array($listener) && is_object($listener[0])) {
                     return get_class($listener[0]).'@'.$listener[1];
-                } elseif (is_object($listener) && is_callable($listener) && ! $listener instanceof Closure) {
-                    return get_class($listener).'@__invoke';
                 }
 
                 return $this->formatClosureListener($listener);
@@ -101,7 +98,7 @@ class EventWatcher extends Watcher
                 return Str::contains($listener, 'Laravel\\Telescope');
             })->map(function ($listener) {
                 if (Str::contains($listener, '@')) {
-                    $queued = in_array(ShouldQueue::class, class_implements(Str::beforeLast($listener, '@')));
+                    $queued = in_array(ShouldQueue::class, class_implements(explode('@', $listener)[0]));
                 }
 
                 return [
@@ -132,16 +129,7 @@ class EventWatcher extends Watcher
     protected function eventIsFiredByTheFramework($eventName)
     {
         return Str::is(
-            [
-                'Illuminate\*',
-                'Laravel\Octane\*',
-                'Laravel\Scout\Events\ModelsImported',
-                'eloquent*',
-                'bootstrapped*',
-                'bootstrapping*',
-                'creating*',
-                'composing*',
-            ],
+            ['Illuminate\*', 'eloquent*', 'bootstrapped*', 'bootstrapping*', 'creating*', 'composing*'],
             $eventName
         );
     }

@@ -182,16 +182,6 @@ class IncomingEntry
     }
 
     /**
-     * Determine if the incoming entry is a request.
-     *
-     * @return bool
-     */
-    public function isRequest()
-    {
-        return $this->type === EntryType::REQUEST;
-    }
-
-    /**
      * Determine if the incoming entry is a failed request.
      *
      * @return bool
@@ -210,26 +200,6 @@ class IncomingEntry
     public function isQuery()
     {
         return $this->type === EntryType::QUERY;
-    }
-
-    /**
-     * Determine if the incoming entry is a slow query.
-     *
-     * @return bool
-     */
-    public function isSlowQuery()
-    {
-        return $this->type === EntryType::QUERY && ($this->content['slow'] ?? false);
-    }
-
-    /**
-     * Determine if the incoming entry is an authorization gate check.
-     *
-     * @return bool
-     */
-    public function isGate()
-    {
-        return $this->type === EntryType::GATE;
     }
 
     /**
@@ -281,16 +251,6 @@ class IncomingEntry
     public function isScheduledTask()
     {
         return $this->type === EntryType::SCHEDULED_TASK;
-    }
-
-    /**
-     * Determine if the incoming entry is an client request.
-     *
-     * @return bool
-     */
-    public function isClientRequest()
-    {
-        return $this->type === EntryType::CLIENT_REQUEST;
     }
 
     /**

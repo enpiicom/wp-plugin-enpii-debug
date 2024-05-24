@@ -36,9 +36,7 @@ class RequestWatcher extends Watcher
      */
     public function recordRequest(RequestHandled $event)
     {
-        if (! Telescope::isRecording() ||
-            $this->shouldIgnoreHttpMethod($event) ||
-            $this->shouldIgnoreStatusCode($event)) {
+        if (! Telescope::isRecording()) {
             return;
         }
 
@@ -56,38 +54,8 @@ class RequestWatcher extends Watcher
             'response_status' => $event->response->getStatusCode(),
             'response' => $this->response($event->response),
             'duration' => $startTime ? floor((microtime(true) - $startTime) * 1000) : null,
-            'memory' => round(memory_get_peak_usage(true) / 1024 / 1024, 1),
+            'memory' => round(memory_get_peak_usage(true) / 1024 / 1025, 1),
         ]));
-    }
-
-    /**
-     * Determine if the request should be ignored based on its method.
-     *
-     * @param  mixed  $event
-     * @return bool
-     */
-    protected function shouldIgnoreHttpMethod($event)
-    {
-        return in_array(
-            strtolower($event->request->method()),
-            collect($this->options['ignore_http_methods'] ?? [])->map(function ($method) {
-                return strtolower($method);
-            })->all()
-        );
-    }
-
-    /**
-     * Determine if the request should be ignored based on its status code.
-     *
-     * @param  mixed  $event
-     * @return bool
-     */
-    protected function shouldIgnoreStatusCode($event)
-    {
-        return in_array(
-            $event->response->getStatusCode(),
-            $this->options['ignore_status_codes'] ?? []
-        );
     }
 
     /**
@@ -98,9 +66,9 @@ class RequestWatcher extends Watcher
      */
     protected function headers($headers)
     {
-        $headers = collect($headers)
-            ->map(fn ($header) => implode(', ', $header))
-            ->all();
+        $headers = collect($headers)->map(function ($header) {
+            return $header[0];
+        })->toArray();
 
         return $this->hideParameters($headers,
             Telescope::$hiddenRequestHeaders
@@ -187,7 +155,7 @@ class RequestWatcher extends Watcher
                         : 'Purged By Telescope';
             }
 
-            if (Str::startsWith(strtolower($response->headers->get('Content-Type') ?? ''), 'text/plain')) {
+            if (Str::startsWith(strtolower($response->headers->get('Content-Type')), 'text/plain')) {
                 return $this->contentWithinLimits($content) ? $content : 'Purged By Telescope';
             }
         }
@@ -203,10 +171,6 @@ class RequestWatcher extends Watcher
             ];
         }
 
-        if (is_string($content) && empty($content)) {
-            return 'Empty Response';
-        }
-
         return 'HTML Response';
     }
 
@@ -220,7 +184,7 @@ class RequestWatcher extends Watcher
     {
         $limit = $this->options['size_limit'] ?? 64;
 
-        return intdiv(mb_strlen($content), 1000) <= $limit;
+        return mb_strlen($content) / 1000 <= $limit;
     }
 
     /**

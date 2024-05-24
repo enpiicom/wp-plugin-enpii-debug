@@ -13,35 +13,35 @@
     <preview-screen title="Scheduled Command Details" resource="requests" :id="$route.params.id">
         <template slot="table-parameters" slot-scope="slotProps">
             <tr>
-                <td class="table-fit text-muted">Description</td>
+                <td class="table-fit font-weight-bold">Description</td>
                 <td>
                     {{slotProps.entry.content.description || '-'}}
                 </td>
             </tr>
 
             <tr>
-                <td class="table-fit text-muted">Command</td>
+                <td class="table-fit font-weight-bold">Command</td>
                 <td>
-                    <code>{{slotProps.entry.content.command || '-'}}</code>
+                    {{slotProps.entry.content.command || '-'}}
                 </td>
             </tr>
 
             <tr>
-                <td class="table-fit text-muted">Expression</td>
+                <td class="table-fit font-weight-bold">Expression</td>
                 <td>
                     {{slotProps.entry.content.expression}}
                 </td>
             </tr>
 
             <tr>
-                <td class="table-fit text-muted">User</td>
+                <td class="table-fit font-weight-bold">User</td>
                 <td>
                     {{slotProps.entry.content.user || '-'}}
                 </td>
             </tr>
 
             <tr>
-                <td class="table-fit text-muted">Timezone</td>
+                <td class="table-fit font-weight-bold">Timezone</td>
                 <td>
                     {{slotProps.entry.content.timezone || '-'}}
                 </td>
@@ -49,16 +49,10 @@
         </template>
 
         <div slot="after-attributes-card" slot-scope="slotProps" v-if="slotProps.entry.content.output">
-            <div class="card mt-5 overflow-hidden">
-                <ul class="nav nav-pills">
-                    <li class="nav-item">
-                        <a class="nav-link active">Output</a>
-                    </li>
-                </ul>
+            <div class="card mt-5">
+                <div class="card-header"><h5>Output</h5></div>
 
-                <copy-clipboard :data="slotProps.entry.content.output">
-                    <pre class="code-bg p-4 mb-0 text-white">{{ slotProps.entry.content.output }}</pre>
-                </copy-clipboard>
+                <pre class="code-bg p-4 mb-0 text-white">{{ slotProps.entry.content.output }}</pre>
             </div>
         </div>
     </preview-screen>

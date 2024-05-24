@@ -34,10 +34,10 @@ interface EntriesRepository
     public function store(Collection $entries);
 
     /**
-     * Store the given entry updates and return the failed updates.
+     * Store the given entry updates.
      *
      * @param  \Illuminate\Support\Collection|\Laravel\Telescope\EntryUpdate[]  $updates
-     * @return \Illuminate\Support\Collection|null
+     * @return void
      */
     public function update(Collection $updates);
 

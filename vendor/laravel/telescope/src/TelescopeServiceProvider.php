@@ -18,9 +18,6 @@ class TelescopeServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->registerCommands();
-        $this->registerPublishing();
-
         if (! config('telescope.enabled')) {
             return;
         }
@@ -28,10 +25,15 @@ class TelescopeServiceProvider extends ServiceProvider
         Route::middlewareGroup('telescope', config('telescope.middleware', []));
 
         $this->registerRoutes();
-        $this->registerResources();
+        $this->registerMigrations();
+        $this->registerPublishing();
 
         Telescope::start($this->app);
         Telescope::listenForStorageOpportunities($this->app);
+
+        $this->loadViewsFrom(
+            __DIR__.'/../resources/views', 'telescope'
+        );
     }
 
     /**
@@ -39,26 +41,38 @@ class TelescopeServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerRoutes()
+    private function registerRoutes()
     {
-        Route::group([
-            'domain' => config('telescope.domain', null),
-            'namespace' => 'Laravel\Telescope\Http\Controllers',
-            'prefix' => config('telescope.path'),
-            'middleware' => 'telescope',
-        ], function () {
-            $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__.'/Http/routes.php');
         });
     }
 
     /**
-     * Register the Telescope resources.
+     * Get the Telescope route group configuration array.
+     *
+     * @return array
+     */
+    private function routeConfiguration()
+    {
+        return [
+            'domain' => config('telescope.domain', null),
+            'namespace' => 'Laravel\Telescope\Http\Controllers',
+            'prefix' => config('telescope.path'),
+            'middleware' => 'telescope',
+        ];
+    }
+
+    /**
+     * Register the package's migrations.
      *
      * @return void
      */
-    protected function registerResources()
+    private function registerMigrations()
     {
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'telescope');
+        if ($this->app->runningInConsole() && $this->shouldMigrate()) {
+            $this->loadMigrationsFrom(__DIR__.'/Storage/migrations');
+        }
     }
 
     /**
@@ -66,20 +80,16 @@ class TelescopeServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerPublishing()
+    private function registerPublishing()
     {
         if ($this->app->runningInConsole()) {
-            $publishesMigrationsMethod = method_exists($this, 'publishesMigrations')
-                ? 'publishesMigrations'
-                : 'publishes';
-
-            $this->{$publishesMigrationsMethod}([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
+            $this->publishes([
+                __DIR__.'/Storage/migrations' => database_path('migrations'),
             ], 'telescope-migrations');
 
             $this->publishes([
                 __DIR__.'/../public' => public_path('vendor/telescope'),
-            ], ['telescope-assets', 'laravel-assets']);
+            ], 'telescope-assets');
 
             $this->publishes([
                 __DIR__.'/../config/telescope.php' => config_path('telescope.php'),
@@ -88,25 +98,6 @@ class TelescopeServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../stubs/TelescopeServiceProvider.stub' => app_path('Providers/TelescopeServiceProvider.php'),
             ], 'telescope-provider');
-        }
-    }
-
-    /**
-     * Register the package's commands.
-     *
-     * @return void
-     */
-    protected function registerCommands()
-    {
-        if ($this->app->runningInConsole()) {
-            $this->commands([
-                Console\ClearCommand::class,
-                Console\InstallCommand::class,
-                Console\PauseCommand::class,
-                Console\PruneCommand::class,
-                Console\PublishCommand::class,
-                Console\ResumeCommand::class,
-            ]);
         }
     }
 
@@ -122,6 +113,13 @@ class TelescopeServiceProvider extends ServiceProvider
         );
 
         $this->registerStorageDriver();
+
+        $this->commands([
+            Console\ClearCommand::class,
+            Console\InstallCommand::class,
+            Console\PruneCommand::class,
+            Console\PublishCommand::class,
+        ]);
     }
 
     /**
@@ -164,5 +162,15 @@ class TelescopeServiceProvider extends ServiceProvider
         $this->app->when(DatabaseEntriesRepository::class)
             ->needs('$chunkSize')
             ->give(config('telescope.storage.database.chunk'));
+    }
+
+    /**
+     * Determine if we should register the migrations.
+     *
+     * @return bool
+     */
+    protected function shouldMigrate()
+    {
+        return Telescope::$runsMigrations && config('telescope.driver') === 'database';
     }
 }

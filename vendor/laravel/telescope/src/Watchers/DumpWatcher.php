@@ -2,7 +2,6 @@
 
 namespace Laravel\Telescope\Watchers;
 
-use Exception;
 use Illuminate\Contracts\Cache\Factory as CacheFactory;
 use Laravel\Telescope\IncomingDumpEntry;
 use Laravel\Telescope\Telescope;
@@ -41,15 +40,7 @@ class DumpWatcher extends Watcher
      */
     public function register($app)
     {
-        $dumpWatcherCache = false;
-
-        try {
-            $dumpWatcherCache = $this->cache->get('telescope:dump-watcher');
-        } catch (Exception) {
-            //
-        }
-
-        if (! ($this->options['always'] ?? false) && ! $dumpWatcherCache) {
+        if (! $this->cache->get('telescope:dump-watcher')) {
             return;
         }
 

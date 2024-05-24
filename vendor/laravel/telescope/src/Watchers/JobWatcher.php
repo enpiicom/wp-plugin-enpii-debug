@@ -3,12 +3,9 @@
 namespace Laravel\Telescope\Watchers;
 
 use Illuminate\Bus\BatchRepository;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Queue;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 use Laravel\Telescope\EntryType;
 use Laravel\Telescope\EntryUpdate;
 use Laravel\Telescope\ExceptionContext;
@@ -16,20 +13,9 @@ use Laravel\Telescope\ExtractProperties;
 use Laravel\Telescope\ExtractTags;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
-use RuntimeException;
 
 class JobWatcher extends Watcher
 {
-    /**
-     * The list of ignored jobs classes.
-     *
-     * @var array<int, class-string>
-     */
-    protected $ignoredJobClasses = [
-        \Laravel\Scout\Jobs\MakeSearchable::class, // @phpstan-ignore-line
-        \Laravel\Telescope\Jobs\ProcessPendingUpdates::class,
-    ];
-
     /**
      * Register the watcher.
      *
@@ -57,14 +43,6 @@ class JobWatcher extends Watcher
     public function recordJob($connection, $queue, array $payload)
     {
         if (! Telescope::isRecording()) {
-            return;
-        }
-
-        $job = isset($payload['data']['command'])
-            ? get_class($payload['data']['command'])
-            : $payload['job'];
-
-        if (in_array($job, $this->ignoredJobClasses)) {
             return;
         }
 
@@ -129,7 +107,7 @@ class JobWatcher extends Watcher
                 'status' => 'failed',
                 'exception' => [
                     'message' => $event->exception->getMessage(),
-                    'trace' => collect($event->exception->getTrace())->map(fn ($trace) => Arr::except($trace, ['args']))->all(),
+                    'trace' => $event->exception->getTrace(),
                     'line' => $event->exception->getLine(),
                     'line_preview' => ExceptionContext::get($event->exception),
                 ],
@@ -202,55 +180,16 @@ class JobWatcher extends Watcher
      */
     protected function updateBatch($payload)
     {
-        if (! isset($payload['data']['command'])) {
-            return;
-        }
-
-        $wasRecordingEnabled = Telescope::$shouldRecord;
-
-        Telescope::$shouldRecord = false;
-
-        $command = $this->getCommand($payload['data']);
-
-        if ($wasRecordingEnabled) {
-            Telescope::$shouldRecord = true;
-        }
-
         $properties = ExtractProperties::from(
-            $command
+            unserialize($payload['data']['command'])
         );
 
         if (isset($properties['batchId'])) {
             $batch = app(BatchRepository::class)->find($properties['batchId']);
 
-            if (is_null($batch)) {
-                return;
-            }
-
             Telescope::recordUpdate(EntryUpdate::make(
                 $properties['batchId'], EntryType::BATCH, $batch->toArray()
             ));
         }
-    }
-
-    /**
-     * Get the command from the given payload.
-     *
-     * @param  array  $data
-     * @return mixed
-     *
-     * @throws \RuntimeException
-     */
-    protected function getCommand(array $data)
-    {
-        if (Str::startsWith($data['command'], 'O:')) {
-            return unserialize($data['command']);
-        }
-
-        if (app()->bound(Encrypter::class)) {
-            return unserialize(app(Encrypter::class)->decrypt($data['command']));
-        }
-
-        throw new RuntimeException('Unable to extract job payload.');
     }
 }

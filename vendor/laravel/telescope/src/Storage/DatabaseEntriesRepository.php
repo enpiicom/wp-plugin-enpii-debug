@@ -3,7 +3,6 @@
 namespace Laravel\Telescope\Storage;
 
 use DateTimeInterface;
-use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Laravel\Telescope\Contracts\ClearableRepository;
@@ -41,7 +40,7 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
      * Create a new database repository.
      *
      * @param  string  $connection
-     * @param  int  $chunkSize
+     * @param  int     $chunkSize
      * @return void
      */
     public function __construct(string $connection, int $chunkSize = null)
@@ -143,7 +142,7 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
 
         $entries->chunk($this->chunkSize)->each(function ($chunked) use ($table) {
             $table->insert($chunked->map(function ($entry) {
-                $entry->content = json_encode($entry->content, JSON_INVALID_UTF8_SUBSTITUTE);
+                $entry->content = json_encode($entry->content);
 
                 return $entry->toArray();
             })->toArray());
@@ -190,31 +189,25 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
     protected function storeTags(Collection $results)
     {
         $results->chunk($this->chunkSize)->each(function ($chunked) {
-            try {
-                $this->table('telescope_entries_tags')->insert($chunked->flatMap(function ($tags, $uuid) {
-                    return collect($tags)->map(function ($tag) use ($uuid) {
-                        return [
-                            'entry_uuid' => $uuid,
-                            'tag' => $tag,
-                        ];
-                    });
-                })->all());
-            } catch (UniqueConstraintViolationException $e) {
-                // Ignore tags that already exist...
-            }
+            $this->table('telescope_entries_tags')->insert($chunked->flatMap(function ($tags, $uuid) {
+                return collect($tags)->map(function ($tag) use ($uuid) {
+                    return [
+                        'entry_uuid' => $uuid,
+                        'tag' => $tag,
+                    ];
+                });
+            })->all());
         });
     }
 
     /**
-     * Store the given entry updates and return the failed updates.
+     * Store the given entry updates.
      *
      * @param  \Illuminate\Support\Collection|\Laravel\Telescope\EntryUpdate[]  $updates
-     * @return \Illuminate\Support\Collection|null
+     * @return void
      */
     public function update(Collection $updates)
     {
-        $failedUpdates = [];
-
         foreach ($updates as $update) {
             $entry = $this->table('telescope_entries')
                             ->where('uuid', $update->uuid)
@@ -222,13 +215,11 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
                             ->first();
 
             if (! $entry) {
-                $failedUpdates[] = $update;
-
                 continue;
             }
 
             $content = json_encode(array_merge(
-                json_decode($entry->content ?? $entry['content'] ?? [], true) ?: [], $update->changes
+                json_decode($entry->content, true) ?: [], $update->changes
             ));
 
             $this->table('telescope_entries')
@@ -238,8 +229,6 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
 
             $this->updateTags($update);
         }
-
-        return collect($failedUpdates);
     }
 
     /**
@@ -251,18 +240,14 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
     protected function updateTags($entry)
     {
         if (! empty($entry->tagsChanges['added'])) {
-            try {
-                $this->table('telescope_entries_tags')->insert(
-                    collect($entry->tagsChanges['added'])->map(function ($tag) use ($entry) {
-                        return [
-                            'entry_uuid' => $entry->uuid,
-                            'tag' => $tag,
-                        ];
-                    })->toArray()
-                );
-            } catch (UniqueConstraintViolationException $e) {
-                // Ignore tags that already exist...
-            }
+            $this->table('telescope_entries_tags')->insert(
+                collect($entry->tagsChanges['added'])->map(function ($tag) use ($entry) {
+                    return [
+                        'entry_uuid' => $entry->uuid,
+                        'tag' => $tag,
+                    ];
+                })->toArray()
+            );
         }
 
         collect($entry->tagsChanges['removed'])->each(function ($tag) use ($entry) {
@@ -348,17 +333,12 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
      * Prune all of the entries older than the given date.
      *
      * @param  \DateTimeInterface  $before
-     * @param  bool  $keepExceptions
      * @return int
      */
-    public function prune(DateTimeInterface $before, $keepExceptions)
+    public function prune(DateTimeInterface $before)
     {
         $query = $this->table('telescope_entries')
                 ->where('created_at', '<', $before);
-
-        if ($keepExceptions) {
-            $query->where('type', '!=', 'exception');
-        }
 
         $totalDeleted = 0;
 
@@ -378,13 +358,8 @@ class DatabaseEntriesRepository implements Contract, ClearableRepository, Prunab
      */
     public function clear()
     {
-        do {
-            $deleted = $this->table('telescope_entries')->take($this->chunkSize)->delete();
-        } while ($deleted !== 0);
-
-        do {
-            $deleted = $this->table('telescope_monitoring')->take($this->chunkSize)->delete();
-        } while ($deleted !== 0);
+        $this->table('telescope_entries')->delete();
+        $this->table('telescope_monitoring')->delete();
     }
 
     /**

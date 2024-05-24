@@ -37,13 +37,11 @@ export default {
         modelActionClass(action) {
             if (action == 'created') return 'success';
             if (action == 'updated') return 'info';
-            if (action == 'retrieved') return 'secondary';
             if (action == 'deleted' || action == 'forceDeleted') return 'danger';
         },
 
         requestStatusClass(status) {
-            if (!status) return 'danger';
-            if (status < 300) return 'success';
+            if (status < 300) return 'secondary';
             if (status < 400) return 'info';
             if (status < 500) return 'warning';
             if (status >= 500) return 'danger';

@@ -9,37 +9,25 @@ trait FetchesStackTrace
     /**
      * Find the first frame in the stack trace outside of Telescope/Laravel.
      *
-     * @param  string|array  $forgetLines
-     * @return array|null
+     * @return array
      */
-    protected function getCallerFromStackTrace($forgetLines = 0)
+    protected function getCallerFromStackTrace()
     {
-        $trace = collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))->forget($forgetLines);
+        $trace = collect(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS))->forget(0);
 
         return $trace->first(function ($frame) {
             if (! isset($frame['file'])) {
                 return false;
             }
 
-            return ! Str::contains($frame['file'], $this->ignoredPaths());
+            return ! Str::contains($frame['file'],
+                base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())
+            );
         });
     }
 
     /**
-     * Get the file paths that should not be used by backtraces.
-     *
-     * @return array
-     */
-    protected function ignoredPaths(): array
-    {
-        return array_merge(
-            [base_path('vendor'.DIRECTORY_SEPARATOR.$this->ignoredVendorPath())],
-            $this->options['ignore_paths'] ?? []
-        );
-    }
-
-    /**
-     * Choose the frame outside of either Telescope / Laravel or all packages.
+     * Choose the frame outside of either Telescope/Laravel or all packages.
      *
      * @return string|null
      */
