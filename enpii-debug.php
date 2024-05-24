@@ -31,7 +31,7 @@ add_action(
 		add_action(
 			'enpii_base_wp_app_loaded',
 			function () {
-				$autoload_file = __DIR__ . DIRECTORY_SEPARATOR . wp_app()->get_composer_folder_name() . DIRECTORY_SEPARATOR . 'autoload.php';
+				$autoload_file = __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
 				if ( ! class_exists( \Enpii_Debug\App\WP\Enpii_Debug_WP_Plugin::class ) ) {
 					require_once $autoload_file;
